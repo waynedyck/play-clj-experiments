@@ -4,6 +4,8 @@ A simple [play-clj](https://github.com/oakes/play-clj) looping animation with th
 
 In your terminal, go to the `desktop` directory and type `lein run`. If all goes well, you should see a window with nothing but a small flapping origami bird in the bottom left.
 
+![Origami bird animation frames](https://github.com/waynedyck/play-clj-experiments/blob/master/looping-animation/desktop/resources/animation.png)
+
 ## Contents
 
 * `android/src` Android-specific code
