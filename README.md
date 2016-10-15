@@ -4,7 +4,8 @@ This repository provides code examples and experiments using [play-clj](https://
 
 ## Contents
 
-* **looping-animation** - a simple looping animation with the graphic located at the default 0,0 location
+* **looping-animation** - a simple 10 frame looping animation with the graphic located at the default 0,0 location
+* **looping-animation-2** - a looping animation showing a complete running cycle consisting of 30 frames from a 6 column, 5 row spritesheet
 
 ## Licensing
 
