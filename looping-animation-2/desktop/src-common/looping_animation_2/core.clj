@@ -23,7 +23,9 @@
   (fn [screen entities]
     (update! screen :camera (orthographic) :renderer (stage))
     (let [sheet (texture "animation_sheet.png")
-          tiles (texture! sheet :split 85.33 102.4)
+          tiles (texture! sheet :split
+                          (/ (texture! sheet :get-region-width) 6)
+                          (/ (texture! sheet :get-region-height) 5))
           player-images (for [row [0 1 2 3 4]
                               col [0 1 2 3 4 5]]
                           (texture (aget tiles row col)))]
