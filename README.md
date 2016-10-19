@@ -6,7 +6,7 @@ This repository provides code examples and experiments using [play-clj](https://
 
 * **looping-animation** - a simple 10 frame looping animation with the graphic located at the default 0,0 location
 * **looping-animation-2** - a looping animation showing a complete running cycle consisting of 30 frames from a 6 column, 5 row spritesheet
-* **box2d-physics-basic ** - a simple Box2D example where we define a world with gravity and two bodies; one dynamic and one static.
+* **box2d-physics-basic** - a simple Box2D example where we define a world with gravity and two bodies; one dynamic and one static.
 
 ## Licensing
 
