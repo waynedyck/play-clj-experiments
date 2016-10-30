@@ -82,7 +82,13 @@
       (->> entities
            (step! screen) ; runs physics simulations for a single frame
            (render! screen))
-      (.render debug-renderer world (.combined camera)))))
+      (.render debug-renderer world (.combined camera))))
+
+  :on-touch-down
+  (fn [screen entities]
+    (let [coords (input->screen screen (input! :get-x) (input! :get-y))
+          world (:world screen)]
+      ())))
 
 (defgame totem-destroyer-game
   :on-create
