@@ -3,7 +3,8 @@
             [play-clj.g2d :refer :all]
             [play-clj.g2d-physics :refer :all]
             [play-clj.math :refer :all])
-  (:import [com.badlogic.gdx.physics.box2d Box2DDebugRenderer]))
+  (:import [com.badlogic.gdx.physics.box2d Box2DDebugRenderer]
+           [com.badlogic.gdx.physics.box2d QueryCallback]))
 
 (def ^:const world-scale 30) ; pixels per meter
 
@@ -15,6 +16,12 @@
          (fixture-def :density 2 :restitution 0.4 :friction 0.5 :shape)
          (body! body :create-fixture))
     body))
+
+(defn create-brick-entity!
+  [screen block width height]
+  (assoc block
+    :body (create-brick-body! screen width height)
+    :width width :height height))
 
 (defn create-idol-body!
   [screen x y]
@@ -71,7 +78,17 @@
           brick-6 (doto {:body (create-brick-body! screen 320 300 120 60)})
           idol (doto {:body (create-idol-body! screen 320 242)})
           floor (doto {:body (create-floor-body! screen 320 470 640 20)})]
-      (width! screen game-w)))
+      (width! screen game-w)
+
+      ; Return the entities
+      [(assoc brick-1 :brick? true)
+       (assoc brick-2 :brick? true)
+       (assoc brick-3 :brick? true)
+       (assoc brick-4 :brick? true)
+       (assoc brick-5 :brick? true)
+       (assoc brick-6 :brick? true)
+       (assoc idol :idol? true)
+       (assoc floor :floor? true)]))
   
   :on-render
   (fn [screen entities]
@@ -87,8 +104,14 @@
   :on-touch-down
   (fn [screen entities]
     (let [coords (input->screen screen (input! :get-x) (input! :get-y))
-          world (:world screen)]
-      ())))
+          world (:world screen)
+          bb [(- (:x coords) 0.1) (- (:y coords) 0.1) (+ (:x coords) 0.1) (+ (:y coords) 0.1)]
+          pt-vec2 (vector-2 (input! :get-x) (input! :get-y))
+          cb (reify QueryCallback
+               (reportFixture [_ fixture]
+                 (if (.testPoint fixture pt-vec2)
+                   true)))])))
+
 
 (defgame totem-destroyer-game
   :on-create
