@@ -18,10 +18,10 @@
     body))
 
 (defn create-brick-entity!
-  [screen block width height]
-  (assoc block
-    :body (create-brick-body! screen width height)
-    :width width :height height))
+  [screen brick x y width height]
+  (assoc brick
+         :body (create-brick-body! screen x y width height)
+         :width (/ width world-scale) :height (/ height world-scale)))
 
 (defn create-idol-body!
   [screen x y]
@@ -70,12 +70,13 @@
                           :camera (orthographic :set-to-ortho true game-w game-h)
                           :world (box-2d 0 5)
                           :debug-renderer (Box2DDebugRenderer.))
-          brick-1 (doto {:body (create-brick-body! screen 275 435 30 30)})
-          brick-2 (doto {:body (create-brick-body! screen 365 435 30 30)})
-          brick-3 (doto {:body (create-brick-body! screen 320 405 120 30)})
-          brick-4 (doto {:body (create-brick-body! screen 320 375 60 30)})
-          brick-5 (doto {:body (create-brick-body! screen 305 345 90 30)})
-          brick-6 (doto {:body (create-brick-body! screen 320 300 120 60)})
+          brick (texture "1x1.png")
+          brick-1 (doto (create-brick-entity! screen brick 15 15 30 30) (body-position! (/ 275 world-scale) (/ 435 world-scale) 0))
+          brick-2 (doto (create-brick-entity! screen brick 15 15 30 30) (body-position! (/ 365 world-scale) (/ 435 world-scale) 0))
+          brick-3 (doto (create-brick-entity! screen brick 60 15 120 30) (body-position! (/ 275 world-scale) (/ 400 world-scale) 0))
+          brick-4 (doto (create-brick-entity! screen brick 30 15 60 30) (body-position! (/ 305 world-scale) (/ 370 world-scale) 0))
+          brick-5 (doto (create-brick-entity! screen brick 45 15 90 30) (body-position! (/ 275 world-scale) (/ 340 world-scale) 0))
+          brick-6 (doto (create-brick-entity! screen brick 60 30 120 60) (body-position! (/ 275 world-scale) (/ 280 world-scale) 0))
           idol (doto {:body (create-idol-body! screen 320 242)})
           floor (doto {:body (create-floor-body! screen 320 470 640 20)})]
       (width! screen game-w)
@@ -111,7 +112,6 @@
                (reportFixture [_ fixture]
                  (if (.testPoint fixture pt-vec2)
                    true)))])))
-
 
 (defgame totem-destroyer-game
   :on-create
