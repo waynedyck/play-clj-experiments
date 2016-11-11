@@ -9,18 +9,21 @@
 (def ^:const world-scale 30) ; pixels per meter
 
 (defn create-brick-body!
-  [screen x y width height]
-  (let [body (add-body! screen (body-def :dynamic))]
-    (->> (polygon-shape :set-as-box (/ (/ width 2) world-scale) (/ (/ height 2) world-scale)
-                        (vector-2 (/ x world-scale) (/ y world-scale)) 0)
+  [screen width height]
+  (let [body (add-body! screen (body-def :dynamic))
+        brick-w (/ width world-scale)
+        brick-h (/ height world-scale)
+        x (/ (/ width 2) world-scale)
+        y (/ (/ height 2) world-scale)]
+    (->> (polygon-shape :set-as-box (/ brick-w 2) (/ brick-h 2) (vector-2 x y) 0)
          (fixture-def :density 2 :restitution 0.4 :friction 0.5 :shape)
          (body! body :create-fixture))
     body))
 
 (defn create-brick-entity!
-  [screen brick x y width height]
+  [screen brick width height]
   (assoc brick
-         :body (create-brick-body! screen x y width height)
+         :body (create-brick-body! screen width height)
          :width (/ width world-scale) :height (/ height world-scale)))
 
 (defn create-idol-body!
@@ -70,13 +73,13 @@
                           :camera (orthographic :set-to-ortho true game-w game-h)
                           :world (box-2d 0 5)
                           :debug-renderer (Box2DDebugRenderer.))
-          brick (texture "1x1.png")
-          brick-1 (doto (create-brick-entity! screen brick 15 15 30 30) (body-position! (/ 275 world-scale) (/ 435 world-scale) 0))
-          brick-2 (doto (create-brick-entity! screen brick 15 15 30 30) (body-position! (/ 365 world-scale) (/ 435 world-scale) 0))
-          brick-3 (doto (create-brick-entity! screen brick 60 15 120 30) (body-position! (/ 275 world-scale) (/ 400 world-scale) 0))
-          brick-4 (doto (create-brick-entity! screen brick 30 15 60 30) (body-position! (/ 305 world-scale) (/ 370 world-scale) 0))
-          brick-5 (doto (create-brick-entity! screen brick 45 15 90 30) (body-position! (/ 275 world-scale) (/ 340 world-scale) 0))
-          brick-6 (doto (create-brick-entity! screen brick 60 30 120 60) (body-position! (/ 275 world-scale) (/ 280 world-scale) 0))
+          brick (texture "1x1-transparent.png")
+          brick-1 (doto (create-brick-entity! screen brick 30 30) (body-position! (/ 275 world-scale) (/ 435 world-scale) 0))
+          brick-2 (doto (create-brick-entity! screen brick 30 30) (body-position! (/ 365 world-scale) (/ 435 world-scale) 0))
+          brick-3 (doto (create-brick-entity! screen brick 120 30) (body-position! (/ 275 world-scale) (/ 395 world-scale) 0))
+          brick-4 (doto (create-brick-entity! screen brick 60 30) (body-position! (/ 305 world-scale) (/ 365 world-scale) 0))
+          brick-5 (doto (create-brick-entity! screen brick 90 30) (body-position! (/ 275 world-scale) (/ 335 world-scale) 0))
+          brick-6 (doto (create-brick-entity! screen brick 120 60) (body-position! (/ 275 world-scale) (/ 280 world-scale) 0))
           idol (doto {:body (create-idol-body! screen 320 242)})
           floor (doto {:body (create-floor-body! screen 320 470 640 20)})]
       (width! screen game-w)
