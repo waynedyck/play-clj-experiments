@@ -21,9 +21,10 @@
     body))
 
 (defn create-brick-entity!
-  [screen brick width height]
+  [screen brick x y width height]
   (assoc brick
          :body (create-brick-body! screen width height)
+         :x (/ x world-scale) :y (/ y world-scale)
          :width (/ width world-scale) :height (/ height world-scale)))
 
 (defn create-idol-body!
@@ -63,6 +64,15 @@
          (body! body :create-fixture))
     body))
 
+(defn get-entity-at-cursor
+  [screen entities]
+  (let [coords (input->screen screen (input! :get-x) (input! :get-y))]
+    (find-first (fn [{:keys [x y width height brick?] :as entity}]
+                  (-> (rectangle x y width height)
+                      (rectangle! :contains (:x coords) (:y coords))
+                      (and brick?)))
+                entities)))
+
 (defscreen main-screen
   :on-show
   (fn [screen entities]
@@ -74,17 +84,17 @@
                           :world (box-2d 0 5)
                           :debug-renderer (Box2DDebugRenderer.))
           brick (texture "1x1-transparent.png")
-          brick-1 (doto (create-brick-entity! screen brick 30 30)
+          brick-1 (doto (create-brick-entity! screen brick 275 435 30 30)
                     (body-position! (/ 275 world-scale) (/ 435 world-scale) 0))
-          brick-2 (doto (create-brick-entity! screen brick 30 30)
+          brick-2 (doto (create-brick-entity! screen brick 365 435 30 30)
                     (body-position! (/ 365 world-scale) (/ 435 world-scale) 0))
-          brick-3 (doto (create-brick-entity! screen brick 120 30)
+          brick-3 (doto (create-brick-entity! screen brick 275 395 120 30)
                     (body-position! (/ 275 world-scale) (/ 395 world-scale) 0))
-          brick-4 (doto (create-brick-entity! screen brick 60 30)
+          brick-4 (doto (create-brick-entity! screen brick 305 365 60 30)
                     (body-position! (/ 305 world-scale) (/ 365 world-scale) 0))
-          brick-5 (doto (create-brick-entity! screen brick 90 30)
+          brick-5 (doto (create-brick-entity! screen brick 275 335 90 30)
                     (body-position! (/ 275 world-scale) (/ 335 world-scale) 0))
-          brick-6 (doto (create-brick-entity! screen brick 120 60)
+          brick-6 (doto (create-brick-entity! screen brick 275 280 120 60)
                     (body-position! (/ 275 world-scale) (/ 280 world-scale) 0))
           idol (doto {:body (create-idol-body! screen 320 242)})
           floor (doto {:body (create-floor-body! screen 320 470 640 20)})]
@@ -113,14 +123,10 @@
 
   :on-touch-down
   (fn [screen entities]
-    (let [coords (input->screen screen (input! :get-x) (input! :get-y))
-          world (:world screen)
-          bb [(- (:x coords) 0.1) (- (:y coords) 0.1) (+ (:x coords) 0.1) (+ (:y coords) 0.1)]
-          pt-vec2 (vector-2 (input! :get-x) (input! :get-y))
-          cb (reify QueryCallback
-               (reportFixture [_ fixture]
-                 (if (.testPoint fixture pt-vec2)
-                   true)))])))
+    (let [brick (get-entity-at-cursor screen entities)]
+      (remove #(= brick %) entities)
+      )
+    ))
 
 (defgame totem-destroyer-game
   :on-create
