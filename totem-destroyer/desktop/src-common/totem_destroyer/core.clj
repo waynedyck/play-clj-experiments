@@ -67,9 +67,19 @@
   [screen entities]
   (let [coords (input->screen screen (input! :get-x) (input! :get-y))]
     (find-first (fn [{:keys [body width height brick?] :as entity}]
-                  (-> (rectangle (x (body! body :get-position)) (y (body! body :get-position)) width height)
-                      (rectangle! :contains (:x coords) (:y coords))
-                      (and brick?)))
+                  (let [rot (body! body :get-angle)
+                        x-pos (x (body! body :get-position))
+                        y-pos (y (body! body :get-position))]
+                    (-> [0 0
+                         0 height
+                         width height
+                         width 0]
+                        float-array
+                        (polygon :set-rotation (/ (* rot 180) Math/PI)
+                                 :set-origin 0 0
+                                 :set-position x-pos y-pos)
+                        (polygon! :contains (:x coords) (:y coords))
+                        (and brick?))))
                 entities)))
 
 (defscreen main-screen
