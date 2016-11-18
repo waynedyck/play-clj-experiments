@@ -66,7 +66,7 @@
 (defn get-entity-at-cursor
   [screen entities]
   (let [coords (input->screen screen (input! :get-x) (input! :get-y))]
-    (find-first (fn [{:keys [body width height brick?] :as entity}]
+    (find-first (fn [{:keys [body width height breakable?] :as entity}]
                   (let [rot (body! body :get-angle)
                         x-pos (x (body! body :get-position))
                         y-pos (y (body! body :get-position))]
@@ -79,7 +79,7 @@
                                  :set-origin 0 0
                                  :set-position x-pos y-pos)
                         (polygon! :contains (:x coords) (:y coords))
-                        (and brick?))))
+                        (and breakable?))))
                 entities)))
 
 (defscreen main-screen
@@ -92,7 +92,7 @@
                           :camera (orthographic :set-to-ortho true game-w game-h)
                           :world (box-2d 0 5)
                           :debug-renderer (Box2DDebugRenderer.))
-          brick (texture "1x1-transparent.png")
+          brick (texture "1x1.png")
           brick-1 (doto (create-brick-entity! screen brick 30 30)
                     (body-position! (/ 275 world-scale) (/ 435 world-scale) 0))
           brick-2 (doto (create-brick-entity! screen brick 30 30)
@@ -110,12 +110,12 @@
       (width! screen game-w)
 
       ; Return the entities
-      [(assoc brick-1 :brick? true)
-       (assoc brick-2 :brick? true)
-       (assoc brick-3 :brick? true)
-       (assoc brick-4 :brick? true)
-       (assoc brick-5 :brick? true)
-       (assoc brick-6 :brick? true)
+      [(assoc brick-1 :breakable? true)
+       (assoc brick-2 :breakable? true)
+       (assoc brick-3 :breakable? true)
+       (assoc brick-4 :breakable? false)
+       (assoc brick-5 :breakable? true)
+       (assoc brick-6 :breakable? false)
        (assoc idol :idol? true)
        (assoc floor :floor? true)]))
   
@@ -132,7 +132,7 @@
 
   :on-touch-down
   (fn [screen entities]
-    (let [brick (get-entity-at-cursor screen entities)]
+    (if-let [brick (get-entity-at-cursor screen entities)]
       (remove #(= brick %) entities))))
 
 (defgame totem-destroyer-game
