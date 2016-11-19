@@ -66,7 +66,7 @@
 (defn get-entity-at-cursor
   [screen entities]
   (let [coords (input->screen screen (input! :get-x) (input! :get-y))]
-    (find-first (fn [{:keys [body width height breakable?] :as entity}]
+    (find-first (fn [{:keys [body width height breakable?] :or {width 0 height 0} :as entity}]
                   (let [rot (body! body :get-angle)
                         x-pos (x (body! body :get-position))
                         y-pos (y (body! body :get-position))]
