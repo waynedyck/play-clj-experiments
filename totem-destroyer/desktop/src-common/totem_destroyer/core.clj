@@ -133,7 +133,11 @@
   :on-touch-down
   (fn [screen entities]
     (if-let [brick (get-entity-at-cursor screen entities)]
-      (remove #(= brick %) entities))))
+      (remove #(= brick %) entities)))
+
+  :on-resize
+  (fn [screen entities]
+    (height! screen 16)))
 
 (defgame totem-destroyer-game
   :on-create
